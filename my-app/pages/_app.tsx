@@ -5,17 +5,26 @@ import { Provider, useDispatch, useSelector } from "react-redux";
 import store from "../store/store";
 import { createWrapper } from "next-redux-wrapper";
 import {fetch, fetchRequest} from "../store/actions";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
+import Loading from "../store/actions/loading";
 
 function MyApp({ Component, pageProps }: AppProps) {
-    const data = useSelector((state) => state);
+
     const dispatch = useDispatch();
     useEffect(()=>{
         dispatch(fetch())
     },[])
-    console.log(data)
+    const state = useSelector((state) =>state);
+    const loading=state ? state.status : "request";
     return (
         <>
+            {
+                loading=="request"?<Loading/>: loading==="success"?state.user.map(({id})=>(
+                    <div key={id}>
+                        <span>{id}</span>
+                    </div>
+                )):<h1>Error</h1>
+            }
             <Provider store={store}>
                 <Component {...pageProps} />
             </Provider>
